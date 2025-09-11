@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en-us">
+
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  <title>Vikings</title>
+  <style>
+    body,
+    html {
+      margin: 0;
+      padding: 0;
+      overflow: hidden;
+      height: 100%;
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background-color: black;
+    }
+
+    #unity-canvas {
+      height: 100%;
+      width: 100%;
+    }
+
+    #loading-screen {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+    }
+  </style>
+</head>
+
+<body>
+
+  <canvas id="unity-canvas" tabindex="-1"></canvas>
+  <script>
+    const canvas = document.querySelector("#unity-canvas");
+    let startTime = performance.now(); // Track start time
+    console.log("Start time recorded as:", startTime.toFixed(2), "ms");
+    
+    function resizeCanvas() {
+      const aspectRatio = 16 / 9;
+      let windowWidth = window.innerWidth;
+      let windowHeight = window.innerHeight;
+
+      if (windowWidth < windowHeight) {
+        let canvasWidth = windowWidth;
+        let canvasHeight = canvasWidth / aspectRatio;
+
+        if (canvasHeight > windowHeight) {
+          canvasHeight = windowHeight;
+          canvasWidth = canvasHeight * aspectRatio;
+        }
+
+        canvas.style.width = `${canvasWidth}px`;
+        canvas.style.height = `${canvasHeight}px`;
+      } else {
+        canvas.style.width = '100%';
+        canvas.style.height = '100%';
+      }
+    }
+
+    let resizeTimeout;
+    window.addEventListener('resize', () => {
+      clearTimeout(resizeTimeout);
+      resizeTimeout = setTimeout(resizeCanvas, 50);
+    });
+
+    var buildUrl = "Build";
+    var loaderUrl = buildUrl + "/Build.loader.js";
+    console.log("Loader URL: ", loaderUrl);
+    
+    var config = {
+      dataUrl: buildUrl + "/Build.data.unityweb",
+      frameworkUrl: buildUrl + "/Build.framework.js.unityweb",
+      codeUrl: buildUrl + "/Build.wasm.unityweb",
+      streamingAssetsUrl: "StreamingAssets",
+      companyName: "DefaultCompany",
+      productName: "Vikings",
+      productVersion: "1.0",
+    };
+
+    console.log("Config loaded: ", config);
+
+    var script = document.createElement("script");
+    script.src = loaderUrl;
+    
+    script.onload = () => {
+      console.log("Loader script loaded at:", performance.now().toFixed(2), "ms");
+      let loadStart = performance.now();
+      createUnityInstance(canvas, config, (progress) => {
+        console.log("Loading progress: ", progress);
+      }).then((unityInstance) => {
+        let loadEnd = performance.now();
+        console.log("Unity instance initialized in", (loadEnd - loadStart).toFixed(2), "ms");
+        console.log("Total time from script start: ", (loadEnd - startTime).toFixed(2), "ms");
+        
+        // Measure cache load time
+        if ('caches' in window) {
+          console.log("Checking cache at:", performance.now().toFixed(2), "ms");
+          caches.open('unity-cache').then(cache => {
+            let cacheTime = performance.now();
+            console.log("Cache load time:", cacheTime.toFixed(2), "ms");
+            console.log("Start time:", startTime.toFixed(2), "ms");
+            console.log("Time difference from start:", (cacheTime - startTime).toFixed(2), "ms");
+          }).catch(() => {
+            let noCacheTime = performance.now();
+            console.log("Cache not found. Network load time:", noCacheTime.toFixed(2), "ms");
+            console.log("Start time:", startTime.toFixed(2), "ms");
+            console.log("Time difference from start:", (noCacheTime - startTime).toFixed(2), "ms");
+          });
+        }
+      }).catch((message) => {
+        console.error("Unity loading error: ", message);
+      });
+    };
+    
+    script.onerror = () => {
+      console.error("Failed to load Unity loader script");
+    };
+
+    document.body.appendChild(script);
+    window.addEventListener('load', () => {
+      console.log("Page fully loaded at:", performance.now().toFixed(2), "ms");
+      resizeCanvas();
+    });
+  </script>
+ <script type="text/javascript">
+  console.log = function() {};
+  console.warn = function() {};
+  console.error = function() {};
+</script>
+  <script>
+    window.addEventListener('beforeunload', () => {
+      console.log("Page unloading. Caching Unity data...");
+    });
+  </script>
+
+  <script>
+    window.focus();
+  </script>
+
+</body>
+
+</html>
