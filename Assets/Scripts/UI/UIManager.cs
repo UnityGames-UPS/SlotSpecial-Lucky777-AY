@@ -62,7 +62,7 @@ public class UIManager : MonoBehaviour
     private Button PaytableExit_Button;
     [SerializeField]
     private TMP_Text[] SymbolsText;
-   
+
 
     [Header("Settings Popup")]
     [SerializeField]
@@ -122,12 +122,15 @@ public class UIManager : MonoBehaviour
     private TMP_Text LoadPercent_Text;
     [SerializeField]
     private Button QuitSplash_button;
-
     [Header("Disconnection Popup")]
     [SerializeField]
     private Button CloseDisconnect_Button;
     [SerializeField]
     private GameObject DisconnectPopup_Object;
+    [Header("Reconnection Popup")]
+
+    [SerializeField]
+    private GameObject ReconectingPopup_Object;
 
     [Header("AnotherDevice Popup")]
     [SerializeField]
@@ -177,6 +180,9 @@ public class UIManager : MonoBehaviour
     private Tween WinPopupTextTween;
     private Tween ClosePopupTween;
     internal int FreeSpins;
+
+    [SerializeField]
+    internal GameObject RaycastBlocker;
     private void Start()
     {
 
@@ -184,7 +190,8 @@ public class UIManager : MonoBehaviour
         if (Menu_Button) Menu_Button.onClick.AddListener(OpenMenu);
 
         if (Exit_Button) Exit_Button.onClick.RemoveAllListeners();
-        if (Exit_Button) Exit_Button.onClick.AddListener(delegate {
+        if (Exit_Button) Exit_Button.onClick.AddListener(delegate
+        {
             OpenPopup(QuitPopup_Object);
             Debug.Log("Quit event: pressed Big_X button");
 
@@ -215,37 +222,47 @@ public class UIManager : MonoBehaviour
         if (SoundOff_Object) SoundOff_Object.SetActive(false);
 
         if (GameExit_Button) GameExit_Button.onClick.RemoveAllListeners();
-        if (GameExit_Button) GameExit_Button.onClick.AddListener(delegate { 
+        if (GameExit_Button) GameExit_Button.onClick.AddListener(delegate
+        {
             OpenPopup(QuitPopup_Object);
             Debug.Log("Quit event: pressed Big_X button");
-            
-            });
+
+        });
 
         if (NoQuit_Button) NoQuit_Button.onClick.RemoveAllListeners();
-        if (NoQuit_Button) NoQuit_Button.onClick.AddListener(delegate { if (!isExit) { 
-            ClosePopup(QuitPopup_Object); 
-            Debug.Log("quit event: pressed NO Button ");
-            } });
+        if (NoQuit_Button) NoQuit_Button.onClick.AddListener(delegate
+        {
+            if (!isExit)
+            {
+                ClosePopup(QuitPopup_Object);
+                Debug.Log("quit event: pressed NO Button ");
+            }
+        });
 
         if (CrossQuit_Button) CrossQuit_Button.onClick.RemoveAllListeners();
-        if (CrossQuit_Button) CrossQuit_Button.onClick.AddListener(delegate { if (!isExit) { 
-            ClosePopup(QuitPopup_Object); 
-            Debug.Log("quit event: pressed Small_X Button ");
-            
-            } });
+        if (CrossQuit_Button) CrossQuit_Button.onClick.AddListener(delegate
+        {
+            if (!isExit)
+            {
+                ClosePopup(QuitPopup_Object);
+                Debug.Log("quit event: pressed Small_X Button ");
+
+            }
+        });
 
         if (LBExit_Button) LBExit_Button.onClick.RemoveAllListeners();
         if (LBExit_Button) LBExit_Button.onClick.AddListener(delegate { ClosePopup(LBPopup_Object); });
 
         if (YesQuit_Button) YesQuit_Button.onClick.RemoveAllListeners();
-        if (YesQuit_Button) YesQuit_Button.onClick.AddListener(delegate{
+        if (YesQuit_Button) YesQuit_Button.onClick.AddListener(delegate
+        {
             CallOnExitFunction();
             Debug.Log("quit event: pressed YES Button ");
-            
-            });
+
+        });
 
         if (CloseDisconnect_Button) CloseDisconnect_Button.onClick.RemoveAllListeners();
-        if (CloseDisconnect_Button) CloseDisconnect_Button.onClick.AddListener((delegate { CallOnExitFunction(); socketManager.ReactNativeCallOnFailedToConnect(); }));
+        if (CloseDisconnect_Button) CloseDisconnect_Button.onClick.AddListener((delegate { CallOnExitFunction(); }));
 
         if (CloseAD_Button) CloseAD_Button.onClick.RemoveAllListeners();
         if (CloseAD_Button) CloseAD_Button.onClick.AddListener(CallOnExitFunction);
@@ -264,8 +281,8 @@ public class UIManager : MonoBehaviour
         if (Music_Button) Music_Button.onClick.RemoveAllListeners();
         if (Music_Button) Music_Button.onClick.AddListener(ToggleMusic);
 
-        if(SkipWinAnimation) SkipWinAnimation.onClick.RemoveAllListeners();
-        if(SkipWinAnimation) SkipWinAnimation.onClick.AddListener(SkipWin);
+        if (SkipWinAnimation) SkipWinAnimation.onClick.RemoveAllListeners();
+        if (SkipWinAnimation) SkipWinAnimation.onClick.AddListener(SkipWin);
     }
 
     internal void LowBalPopup()
@@ -283,7 +300,7 @@ public class UIManager : MonoBehaviour
 
     internal void PopulateWin(int value, double amount)
     {
-        switch(value)
+        switch (value)
         {
             case 1:
                 if (Win_Image) Win_Image.sprite = BigWin_Sprite;
@@ -302,17 +319,20 @@ public class UIManager : MonoBehaviour
         StartPopupAnim(amount);
     }
 
-   
 
-    void SkipWin(){
+
+    void SkipWin()
+    {
         Debug.Log("Skip win called");
-        if(ClosePopupTween!=null){
+        if (ClosePopupTween != null)
+        {
             ClosePopupTween.Kill();
-            ClosePopupTween=null;
+            ClosePopupTween = null;
         }
-        if(WinPopupTextTween!=null){
+        if (WinPopupTextTween != null)
+        {
             WinPopupTextTween.Kill();
-            WinPopupTextTween=null;
+            WinPopupTextTween = null;
         }
         ClosePopup(WinPopup_Object);
         slotManager.CheckPopups = false;
@@ -337,52 +357,64 @@ public class UIManager : MonoBehaviour
 
     internal void ADfunction()
     {
-        OpenPopup(ADPopup_Object); 
+        OpenPopup(ADPopup_Object);
     }
 
-    internal void InitialiseUIData(string SupportUrl, string AbtImgUrl, string TermsUrl, string PrivacyUrl, Paylines symbolsText)
+    internal void InitialiseUIData(Paylines symbolsText)
     {
-        if (Support_Button) Support_Button.onClick.RemoveAllListeners();
-        if (Support_Button) Support_Button.onClick.AddListener(delegate { UrlButtons(SupportUrl); });
 
-        if (Terms_Button) Terms_Button.onClick.RemoveAllListeners();
-        if (Terms_Button) Terms_Button.onClick.AddListener(delegate { UrlButtons(TermsUrl); });
-
-        if (Privacy_Button) Privacy_Button.onClick.RemoveAllListeners();
-        if (Privacy_Button) Privacy_Button.onClick.AddListener(delegate { UrlButtons(PrivacyUrl); });
-
-        StartCoroutine(DownloadImage(AbtImgUrl));
         PopulateSymbolsPayout(symbolsText);
     }
 
     private void PopulateSymbolsPayout(Paylines paylines)
     {
-        jackpot_text.text = socketManager.initialData.jackpotMultiplier.ToString() + "X";
-        SymbolsText[0].text = socketManager.initialData.paytable[0].payout.ToString() + "X";
-        SymbolsText[1].text = socketManager.initialData.paytable[1].payout.ToString() + "X";
-        SymbolsText[2].text = socketManager.initialData.paytable[2].payout.ToString() + "X";
-        SymbolsText[3].text = socketManager.initialData.paytable[3].payout.ToString() + "X";
-        SymbolsText[4].text = socketManager.initialData.paytable[4].payout.ToString() + "X";
-        SymbolsText[5].text = socketManager.initialData.paytable[5].payout.ToString() + "X";
-        SymbolsText[6].text = socketManager.initialData.paytable[6].payout.ToString() + "X";
-        SymbolsText[7].text = socketManager.initialData.paytable[7].payout.ToString() + "X";
-        SymbolsText[8].text = socketManager.initialData.paytable[14].payout.ToString() + "X";
-        SymbolsText[9].text = socketManager.initialData.paytable[14].payout.ToString() + "X";
-        SymbolsText[10].text = socketManager.initialData.paytable[14].payout.ToString() + "X";
-        SymbolsText[11].text = socketManager.initialData.paytable[19].payout.ToString() + "X";
+        jackpot_text.text = socketManager.initPaydata.features.jackpotMultiplier.ToString() + "X";
+        SymbolsText[0].text = socketManager.initUIData.paylines.symbols[0].payout.ToString() + "X";
+        SymbolsText[1].text = socketManager.initUIData.paylines.symbols[1].payout + "X";
+        SymbolsText[2].text = socketManager.initUIData.paylines.symbols[2].payout + "X";
+        SymbolsText[3].text = socketManager.initUIData.paylines.symbols[3].payout + "X";
+        SymbolsText[4].text = socketManager.initUIData.paylines.symbols[4].payout + "X";
+        SymbolsText[5].text = socketManager.initUIData.paylines.symbols[5].payout + "X";
+        SymbolsText[6].text = socketManager.initUIData.paylines.symbols[6].payout + "X";
+        SymbolsText[7].text = socketManager.initPaydata.features.anyPayout.seven + "X";
+        SymbolsText[8].text = socketManager.initPaydata.features.anyPayout.orange + "X";
+        SymbolsText[9].text = socketManager.initPaydata.features.anyPayout.gray + "X";
+        SymbolsText[10].text = socketManager.initPaydata.features.anyPayout.blue + "X";
+        SymbolsText[11].text = socketManager.initPaydata.features.anyPayout.bar + "X";
 
-        for (int i = 0; i < paylines.symbols.Count; i++)
+        if (Wild_Text) Wild_Text.text = "Substitute any 7 symbol multiplies winnings \n multiplier stack.";
+        // for (int i = 0; i < paylines.symbols.Count; i++)
+        // {
+
+        //     if (paylines.symbols[i].name == "6")
+        //     {
+
+        //     }
+
+        // }
+
+
+    }
+    internal void DisconnectionPopup()
+    {
+
+        if (!isExit)
         {
-           
-            if (paylines.symbols[i].Name == "6")
-            {
-              
-                if (Wild_Text) Wild_Text.text = paylines.symbols[i].description.ToString();
-            }
-
+            OpenPopup(DisconnectPopup_Object);
         }
 
+    }
+    internal void CheckAndClosePopups()
+    {
 
+        if (ReconectingPopup_Object.activeInHierarchy)
+        {
+            ClosePopup(ReconectingPopup_Object);
+        }
+        if (DisconnectPopup_Object.activeInHierarchy)
+        {
+            ClosePopup(DisconnectPopup_Object);
+        }
     }
 
     private void CallOnExitFunction()
@@ -440,10 +472,10 @@ public class UIManager : MonoBehaviour
         {
             if (Close_Menu_Button) Close_Menu_Button.gameObject.SetActive(false);
             if (Menu_Object) Menu_Object.SetActive(true);
-             if (Exit_Object) Exit_Object.SetActive(false);
-             //if (About_Object) About_Object.SetActive(false);
-             if (Settings_Object) Settings_Object.SetActive(false);
-         });
+            if (Exit_Object) Exit_Object.SetActive(false);
+            //if (About_Object) About_Object.SetActive(false);
+            if (Settings_Object) Settings_Object.SetActive(false);
+        });
     }
 
     private void OpenPopup(GameObject Popup)
@@ -453,12 +485,16 @@ public class UIManager : MonoBehaviour
         if (Popup) Popup.SetActive(true);
         if (MainPopup_Object) MainPopup_Object.SetActive(true);
     }
+    internal void ReconnectionPopup()
+    {
+        OpenPopup(ReconectingPopup_Object);
+    }
 
     private void ClosePopup(GameObject Popup)
     {
         if (audioController) audioController.PlayButtonAudio();
         if (Popup) Popup.SetActive(false);
-        if (!DisconnectPopup_Object.activeSelf) 
+        if (!DisconnectPopup_Object.activeSelf)
         {
             if (MainPopup_Object) MainPopup_Object.SetActive(false);
         }
@@ -495,15 +531,15 @@ public class UIManager : MonoBehaviour
         {
             if (SoundOn_Object) SoundOn_Object.SetActive(true);
             if (SoundOff_Object) SoundOff_Object.SetActive(false);
-            if (audioController) audioController.ToggleMute(false,"button");
-            if (audioController) audioController.ToggleMute(false,"wl");
+            if (audioController) audioController.ToggleMute(false, "button");
+            if (audioController) audioController.ToggleMute(false, "wl");
         }
         else
         {
             if (SoundOn_Object) SoundOn_Object.SetActive(false);
             if (SoundOff_Object) SoundOff_Object.SetActive(true);
-            if(audioController) audioController.ToggleMute(true,"button");
-            if (audioController) audioController.ToggleMute(true,"wl");
+            if (audioController) audioController.ToggleMute(true, "button");
+            if (audioController) audioController.ToggleMute(true, "wl");
         }
     }
 

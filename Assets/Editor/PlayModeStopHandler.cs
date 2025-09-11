@@ -1,3 +1,4 @@
+using NUnit.Framework.Constraints;
 using UnityEditor;
 using UnityEngine;
 
@@ -29,7 +30,7 @@ public static class PlayModeStopHandler
             var targetScript = targetObject.GetComponent<SocketIOManager>(); // Replace with your actual script name
             if (targetScript != null)
             {
-                targetScript.CloseSocket(); // Call your desired method
+                targetScript.CloseGame(); // Call your desired method
             }
             else
             {
