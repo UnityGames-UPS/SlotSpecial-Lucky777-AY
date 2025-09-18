@@ -169,8 +169,8 @@
     <Compile Include="Assets/com.unity.uiextensions/Runtime/Scripts/Utilities/ScrollRectExtensions.cs" />
     <Compile Include="Assets/com.unity.uiextensions/Runtime/Scripts/ToolTips/BoundTooltip/BoundTooltipItem.cs" />
     <Compile Include="Assets/Scripts/Functionality/Stopper.cs" />
-    <Compile Include="Assets/Scripts/APIs/SocketIOManager.cs" />
     <Compile Include="Assets/Scripts/OrientationChange.cs" />
+    <Compile Include="Assets/Scripts/APIs/SocketIOManager.cs" />
     <Compile Include="Assets/com.unity.uiextensions/Runtime/Scripts/Utilities/ScrollRectTweener.cs" />
     <Compile Include="Assets/com.unity.uiextensions/Runtime/Scripts/Controls/ColorPicker/ColorSampler.cs" />
     <Compile Include="Assets/com.unity.uiextensions/Runtime/Scripts/Controls/SegmentedControl.cs" />

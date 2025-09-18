@@ -561,6 +561,10 @@ public class SlotBehaviour : MonoBehaviour
             StartCoroutine(CheckPayoutLineBackend(SocketManager.resultData.payload.lineWins));
 
         }
+        else
+        {
+            if (audioController) audioController.StopWLAaudio();
+        }
 
         CheckPopups = true;
 
@@ -588,6 +592,7 @@ public class SlotBehaviour : MonoBehaviour
             yield return new WaitForSeconds(1f);
             IsSpinning = false;
         }
+
 
     }
 
