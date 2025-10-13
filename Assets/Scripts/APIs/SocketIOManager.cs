@@ -628,10 +628,10 @@ public class Features
 
 public class AnyPayout
 {
-    public int seven { get; set; }
-    public int orange { get; set; }
-    public int gray { get; set; }
-    public int blue { get; set; }
+    public double seven { get; set; }
+    public double orange { get; set; }
+    public double gray { get; set; }
+    public double blue { get; set; }
     public double bar { get; set; }
 }
 public class GameData
